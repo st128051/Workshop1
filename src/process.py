@@ -130,13 +130,15 @@ print(f"\nОкончательный результат: {quantity_name} = ({x_m
 os.makedirs("output", exist_ok=True)
 os.makedirs("figures", exist_ok=True)  # для сохранения картинок отчёта
 
-# 4.1 График дрейфа
+# 4.1 График дрейфа (точки не соединены, линия среднего)
 plt.figure(figsize=(10, 5))
-plt.plot(range(1, n+1), data_precise, 'bo-', markersize=3, linewidth=0.5)
+plt.plot(range(1, n+1), data_precise, 'bo', markersize=3, label='Результаты наблюдений')
+plt.axhline(y=x_mean, color='r', linestyle='-', linewidth=1, label=f'Среднее = {x_mean:.4f} В')
 plt.xlabel('Номер наблюдения')
 plt.ylabel(f'{quantity_name}, {unit}')
 plt.title('Зависимость результатов наблюдений от времени (порядка)')
 plt.grid(True)
+plt.legend()
 plt.savefig('figures/drift.png', dpi=300)
 plt.show()
 
@@ -159,11 +161,11 @@ with open('output/histogram_data.txt', 'w') as f:
     for c, cnt in zip(centers, counts):
         f.write(f"{c:.6f} {cnt}\n")
 
-# 4.3График плотности
+# 4.3 График плотности (точки не соединены)
 total = n
 density = [c/total for c in counts]
 plt.figure(figsize=(8, 5))
-plt.plot(centers, density, 'ro-', markersize=4)
+plt.plot(centers, density, 'ro', markersize=4)   # убрали соединительную линию
 plt.xlabel(f'{quantity_name}, {unit}')
 plt.ylabel('δn = Δn/n')
 plt.title('График доли попаданий в интервалы')
@@ -183,7 +185,7 @@ with open('output/table_precise.csv', 'w', newline='', encoding='utf-8') as f:
 with open('output/table_precise.tex', 'w', encoding='utf-8') as f:
     f.write("\\begin{tabular}{|c|c|c|c|}\n")
     f.write("\\hline\n")
-    f.write("№ & $U_i$, В & $d_i = U_i - \\overline{U}$ & $d_i^2$ \\\\\n")
+    f.write("No. & $U_i$, V & $d_i = U_i - \\overline{U}$ & $d_i^2$ \\\\\n")
     f.write("\\hline\n")
     for i, x in enumerate(data_precise, start=1):
         d = x - x_mean
@@ -199,7 +201,7 @@ print("\nТаблицы и графики сохранены в папках out
 with open('output/table_rough.tex', 'w', encoding='utf-8') as f:
     f.write("\\begin{tabular}{|c|c|c|c|}\n")
     f.write("\\hline\n")
-    f.write("№ п/п & Диапазон шкалы, В & $U_i$, В & $\\Delta U_{\\text{приб}}$, В \\\\\n")
+    f.write("No. & Range, V & $U_i$, V & $\\Delta U_{\\text{приб}}$, V \\\\\n")
     f.write("\\hline\n")
     for i, x in enumerate(data_rough, start=1):
         f.write(f"{i} & 0-10 & {x:.3f} & {omega_rough} \\\\\n")
